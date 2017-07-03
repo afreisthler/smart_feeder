@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:Feeder1.xcodeproj">
+      location = "self:/opt/smart_feeder/ios_src/Smart Feeder.xcodeproj">
    </FileRef>
 </Workspace>

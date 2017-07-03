@@ -18,6 +18,8 @@
 		BE785A771EDE4A8F00CAD9B8 /* FeederRunEventTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE785A761EDE4A8F00CAD9B8 /* FeederRunEventTableViewCell.swift */; };
 		BE785A791EDE5DD300CAD9B8 /* FeederRunEventTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE785A781EDE5DD300CAD9B8 /* FeederRunEventTableViewController.swift */; };
 		BE785A7B1EDE5F1700CAD9B8 /* FeederRunEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE785A7A1EDE5F1700CAD9B8 /* FeederRunEvent.swift */; };
+		BECD79421F09864E000AC8F5 /* FeederDeviceTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BECD79411F09864E000AC8F5 /* FeederDeviceTableViewController.swift */; };
+		BECD79441F098735000AC8F5 /* FeederDeviceTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BECD79431F098735000AC8F5 /* FeederDeviceTableViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,6 +48,8 @@
 		BE785A761EDE4A8F00CAD9B8 /* FeederRunEventTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeederRunEventTableViewCell.swift; sourceTree = "<group>"; };
 		BE785A781EDE5DD300CAD9B8 /* FeederRunEventTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeederRunEventTableViewController.swift; sourceTree = "<group>"; };
 		BE785A7A1EDE5F1700CAD9B8 /* FeederRunEvent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeederRunEvent.swift; sourceTree = "<group>"; };
+		BECD79411F09864E000AC8F5 /* FeederDeviceTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeederDeviceTableViewController.swift; sourceTree = "<group>"; };
+		BECD79431F098735000AC8F5 /* FeederDeviceTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeederDeviceTableViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,7 +99,9 @@
 				BE785A7A1EDE5F1700CAD9B8 /* FeederRunEvent.swift */,
 				BE785A741EDE3F8000CAD9B8 /* FeederRunEventViewController.swift */,
 				BE785A781EDE5DD300CAD9B8 /* FeederRunEventTableViewController.swift */,
+				BECD79411F09864E000AC8F5 /* FeederDeviceTableViewController.swift */,
 				BE785A761EDE4A8F00CAD9B8 /* FeederRunEventTableViewCell.swift */,
+				BECD79431F098735000AC8F5 /* FeederDeviceTableViewCell.swift */,
 				BE44B41B1ECC9BC6005C8097 /* Assets.xcassets */,
 				BE44B41D1ECC9BC6005C8097 /* LaunchScreen.storyboard */,
 				BE44B4201ECC9BC6005C8097 /* Info.plist */,
@@ -180,7 +186,7 @@
 					};
 				};
 			};
-			buildConfigurationList = BE44B40C1ECC9BC6005C8097 /* Build configuration list for PBXProject "Feeder1" */;
+			buildConfigurationList = BE44B40C1ECC9BC6005C8097 /* Build configuration list for PBXProject "Smart Feeder" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -224,11 +230,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BECD79441F098735000AC8F5 /* FeederDeviceTableViewCell.swift in Sources */,
 				BE785A751EDE3F8000CAD9B8 /* FeederRunEventViewController.swift in Sources */,
 				BE44B4171ECC9BC6005C8097 /* FeederDetailViewController.swift in Sources */,
 				BE44B4151ECC9BC6005C8097 /* AppDelegate.swift in Sources */,
 				BE785A771EDE4A8F00CAD9B8 /* FeederRunEventTableViewCell.swift in Sources */,
 				BE785A791EDE5DD300CAD9B8 /* FeederRunEventTableViewController.swift in Sources */,
+				BECD79421F09864E000AC8F5 /* FeederDeviceTableViewController.swift in Sources */,
 				BE785A7B1EDE5F1700CAD9B8 /* FeederRunEvent.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -424,7 +432,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		BE44B40C1ECC9BC6005C8097 /* Build configuration list for PBXProject "Feeder1" */ = {
+		BE44B40C1ECC9BC6005C8097 /* Build configuration list for PBXProject "Smart Feeder" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				BE44B42C1ECC9BC6005C8097 /* Debug */,

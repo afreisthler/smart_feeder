@@ -76,7 +76,7 @@ class FeederRunEventTableViewController: UITableViewController {
         let cellIdentifier = "FeederRunEventTableViewCell"
         
         guard let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath) as? FeederRunEventTableViewCell else {
-            fatalError("The dequeued cell is not the correc instance")
+            fatalError("The dequeued cell is not the correct instance")
         }
 
         let feederRunEvent = feederRunEvents[indexPath.row]
@@ -135,7 +135,7 @@ class FeederRunEventTableViewController: UITableViewController {
             feederRunEventDetailViewController?.feederRunEvent = selectedFeederRunEvent
             
         default:
-            fatalError("Unexpected Segue Identifier; \(String(describing: segue.identifier))")
+            os_log("Should be heded to our info screen", log: OSLog.default, type: .debug)
         }
         
     }

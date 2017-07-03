@@ -39,12 +39,18 @@ class FeederDetailViewController: UIViewController, CBCentralManagerDelegate, CB
     @IBOutlet weak var timeLabel: UILabel!
     @IBOutlet weak var nextRunLabel: UILabel!
     @IBOutlet weak var durationLabel: UILabel!
+    @IBOutlet weak var editButton: UIButton!
+    @IBOutlet weak var synchButton: UIButton!
+    @IBOutlet weak var feedNowButon: UIButton!
     
     // Var to know whether or not we should be communicating
     var feederConnected = false
+    var forceDisconnect = false
     
     // Activity monitor when needed while processing
     var activityIndicator:UIActivityIndicatorView = UIActivityIndicatorView()
+
+
     
     // Location data
     let locationManager = CLLocationManager()
@@ -56,15 +62,27 @@ class FeederDetailViewController: UIViewController, CBCentralManagerDelegate, CB
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Let reconnects to occur
+        forceDisconnect = false
+
+        // Set up activity indicator
+        activityIndicator.center = self.view.center
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.gray
+        view.addSubview(activityIndicator)
+        
         // BLE Initialization
         centralManager = CBCentralManager(delegate: self, queue: nil)
-        timer = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(getAndSetTimeAndVoltage), userInfo: nil, repeats: true)
         
         // Location Initialization
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.requestWhenInUseAuthorization()
         locationManager.startUpdatingLocation()
+        
+        // Let reconnects to occur
+        forceDisconnect = false
+        
     }
 
 
@@ -79,20 +97,30 @@ class FeederDetailViewController: UIViewController, CBCentralManagerDelegate, CB
     
     // Sync Button
     @IBAction func synchDevice(_ sender: UIButton) {
+        
 
         os_log("Eecuting Sync Device", log: OSLog.default, type: .debug)
         
-        if let savedFeederRunEvents = loadFeederRunEvents() {
-            if savedFeederRunEvents.count > 0 {
-                sendToDevice(command: "cl" + String(savedFeederRunEvents.count), buffer: "")
-                for i in 0...savedFeederRunEvents.count-1 {
-                    sendToDevice(command: "ty" + String(i), buffer: savedFeederRunEvents[i].type)
-                    sendToDevice(command: "rm" + String(i), buffer: String(savedFeederRunEvents[i].runMinutes))
-                    sendToDevice(command: "of" + String(i), buffer: String(savedFeederRunEvents[i].offset))
-                    sendToDevice(command: "da" + String(i), buffer: String(savedFeederRunEvents[i].date.timeIntervalSince1970))
+        disableAllButtons()
+        activityIndicator.startAnimating()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            
+            if let savedFeederRunEvents = self.loadFeederRunEvents() {
+                if savedFeederRunEvents.count > 0 {
+                    self.sendToDevice(command: "cl" + String(savedFeederRunEvents.count), buffer: "")
+                    for i in 0...savedFeederRunEvents.count-1 {
+                        self.sendToDevice(command: "ty" + String(i), buffer: savedFeederRunEvents[i].type)
+                        self.sendToDevice(command: "rm" + String(i), buffer: String(savedFeederRunEvents[i].runMinutes))
+                        self.sendToDevice(command: "of" + String(i), buffer: String(savedFeederRunEvents[i].offset))
+                        self.sendToDevice(command: "da" + String(i), buffer: String(savedFeederRunEvents[i].date.timeIntervalSince1970))
+                    }
+                    self.sendToDevice(command: "rc", buffer: "")
                 }
-                sendToDevice(command: "rc", buffer: "")
             }
+
+            self.activityIndicator.stopAnimating()
+            self.enableAllButtons()
         }
     }
     
@@ -201,12 +229,14 @@ class FeederDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         nextRunLabel.text = "Unknown"
         durationLabel.text = "Unknown"
         
-        // Tell user the connection was lost.
-        let alert = UIAlertController(title: "Disconnected", message: "Connection to the Smart Feeder has been lost.  The connection will try to be reestablished.", preferredStyle: UIAlertControllerStyle.alert)
-        alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler: nil))
-        self.present(alert, animated: true, completion: nil)
+        if (!forceDisconnect) {
+            // Tell user the connection was lost.
+            let alert = UIAlertController(title: "Disconnected", message: "Connection to the Smart Feeder has been lost.  The connection will try to be reestablished.", preferredStyle: UIAlertControllerStyle.alert)
+            alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler: nil))
+            self.present(alert, animated: true, completion: nil)
         
         centralManager.scanForPeripherals(withServices: [CBUUID(string: BLEUartService)], options: nil)
+        }
     }
     
     
@@ -264,9 +294,11 @@ class FeederDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                 if (characteristic.uuid.uuidString == BLEUartTxCharacteristic) {
                     os_log("Found TX characteristic", log: OSLog.default, type: .debug)
                     transmitCharacteristic = characteristic
-                    setTimeOnDevice()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        self.setTimeOnDevice()
+                    }
                     usleep(useconds_t(10 * ms))
-                    getAndSetTimeAndVoltage()
+//                    getAndSetTimeAndVoltage()
                 } else if (characteristic.uuid.uuidString == BLEUartRxCharacteristic) {
                     os_log("Found RX characteristic", log: OSLog.default, type: .debug)
                     peripheral.setNotifyValue(true, for: characteristic)
@@ -327,6 +359,27 @@ class FeederDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         }
     }
     
+    
+    // MARK: - Navigation
+    
+    // If returning to list of feeders, disconnect this one
+    override func viewWillDisappear(_ animated : Bool) {
+        super.viewWillDisappear(animated)
+        
+        if self.isMovingFromParentViewController {
+            os_log("Moving to parent.  Disconnecting Device", log: OSLog.default, type: .debug)
+            centralManager.cancelPeripheralConnection(feeder!)
+            feederConnected = false
+            haveSetDeviceLocation = false
+            forceDisconnect = true
+            voltageLabel.text = "Unknown"
+            timeLabel.text = "Unknown"
+            nextRunLabel.text = "Unknown"
+            durationLabel.text = "Unknown"
+        }
+    }
+    
+    
     // MARK: - Private Methods
     
 
@@ -341,8 +394,24 @@ class FeederDetailViewController: UIViewController, CBCentralManagerDelegate, CB
     
     // Sends time from phone to Smart Feeder Hardware
     func setTimeOnDevice() {
-        let seconds: TimeInterval = NSDate().timeIntervalSince1970
-        sendToDevice(command: "ts", buffer: String(seconds))
+        
+        disableAllButtons()
+        activityIndicator.startAnimating()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            
+            let seconds: TimeInterval = NSDate().timeIntervalSince1970
+            self.sendToDevice(command: "ts", buffer: String(seconds))
+            self.setLatAndLongOnDevice()
+            self.getAndSetTimeAndVoltage()
+            
+            self.timer = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(self.getAndSetTimeAndVoltage), userInfo: nil, repeats: true)
+            
+            self.activityIndicator.stopAnimating()
+            self.enableAllButtons()
+        }
+        
+        
+
     }
     
     // Sends lat and long from phone to Smart Feeder Hardware
@@ -364,15 +433,13 @@ class FeederDetailViewController: UIViewController, CBCentralManagerDelegate, CB
     // Sends command that will result in time and voltage being sent back
     func getAndSetTimeAndVoltage() {
         if feederConnected {
-            if !haveSetDeviceLocation {
-                setLatAndLongOnDevice()
-            }
             sendToDevice(command: "st", buffer: "")
         }
     }
     
     // Utility method to send to device.  Wait is introduced to get unique buffer per command.  Could not find a way to flush.
     func sendToDevice(command: String, buffer: String) {
+        
         let fullCommand =  command + buffer
         let dataToSend = fullCommand.data(using: String.Encoding.utf8)
         if (feeder != nil) {
@@ -387,6 +454,24 @@ class FeederDetailViewController: UIViewController, CBCentralManagerDelegate, CB
     private func loadFeederRunEvents() -> [FeederRunEvent]? {
         return NSKeyedUnarchiver.unarchiveObject(withFile: FeederRunEvent.ArchiveURL.path) as? [FeederRunEvent]
     }
+    
+    private func disableAllButtons() {
+        UIApplication.shared.beginIgnoringInteractionEvents()
+        navigationController?.navigationBar.isUserInteractionEnabled = false
+        editButton.isEnabled = false
+        synchButton.isEnabled = false
+        feedNowButon.isEnabled = false
+        
+    }
+    
+    private func enableAllButtons() {
+        editButton.isEnabled = true
+        synchButton.isEnabled = true
+        feedNowButon.isEnabled = true
+        navigationController?.navigationBar.isUserInteractionEnabled = true
+        UIApplication.shared.endIgnoringInteractionEvents()
+    }
+    
     
 }
 

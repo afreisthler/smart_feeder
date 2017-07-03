@@ -17,7 +17,7 @@
                BlueprintIdentifier = "BE44B4101ECC9BC6005C8097"
                BuildableName = "Feeder1.app"
                BlueprintName = "Feeder1"
-               ReferencedContainer = "container:Feeder1.xcodeproj">
+               ReferencedContainer = "container:Smart Feeder.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -35,7 +35,7 @@
                BlueprintIdentifier = "BE44B4241ECC9BC6005C8097"
                BuildableName = "Feeder1Tests.xctest"
                BlueprintName = "Feeder1Tests"
-               ReferencedContainer = "container:Feeder1.xcodeproj">
+               ReferencedContainer = "container:Smart Feeder.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -45,7 +45,7 @@
             BlueprintIdentifier = "BE44B4101ECC9BC6005C8097"
             BuildableName = "Feeder1.app"
             BlueprintName = "Feeder1"
-            ReferencedContainer = "container:Feeder1.xcodeproj">
+            ReferencedContainer = "container:Smart Feeder.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -68,7 +68,7 @@
             BlueprintIdentifier = "BE44B4101ECC9BC6005C8097"
             BuildableName = "Feeder1.app"
             BlueprintName = "Feeder1"
-            ReferencedContainer = "container:Feeder1.xcodeproj">
+            ReferencedContainer = "container:Smart Feeder.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -87,7 +87,7 @@
             BlueprintIdentifier = "BE44B4101ECC9BC6005C8097"
             BuildableName = "Feeder1.app"
             BlueprintName = "Feeder1"
-            ReferencedContainer = "container:Feeder1.xcodeproj">
+            ReferencedContainer = "container:Smart Feeder.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
