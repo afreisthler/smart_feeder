@@ -386,6 +386,9 @@ void syncStatus() {
 
     sendData("r" + String(hour) + ":" + minstr + " " + daytime);
     sendData("d" + String(possibleRunTimesDurations[0]));    
+  } else {
+    sendData("rNone");
+    sendData("dNone");    
   }
 }
 

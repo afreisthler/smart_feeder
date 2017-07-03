@@ -14,7 +14,7 @@ class FeederRunEventTableViewController: UITableViewController {
     // MARK: - Properties
     
     var feederRunEvents = [FeederRunEvent]()
-    
+    var feeder_uuid = ""
     
     
     // MARK: - Actions
@@ -33,9 +33,7 @@ class FeederRunEventTableViewController: UITableViewController {
             }
             
             saveFeederRunEvents()
-            
         }
-        
     }
     
     
@@ -44,13 +42,12 @@ class FeederRunEventTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // for testing
-        
         if let savedFeederRunEvents = loadFeederRunEvents() {
             feederRunEvents += savedFeederRunEvents
             
         } else {
-            loadSampleFeederRunEvents()
+            // for testing
+            // loadSampleFeederRunEvents()
         }
 
     }
@@ -154,7 +151,11 @@ class FeederRunEventTableViewController: UITableViewController {
     // MARK: - Private Methods
     
     private func saveFeederRunEvents() {
-        let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(feederRunEvents, toFile: FeederRunEvent.ArchiveURL.path)
+        
+        let archiveURL = FeederRunEvent.DocumentsDirectory.appendingPathComponent(feeder_uuid)
+        print(archiveURL)
+        
+        let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(feederRunEvents, toFile: archiveURL.path)
         if isSuccessfulSave {
             os_log("List of run events save success", log: OSLog.default, type: .debug)
         } else {
@@ -163,7 +164,10 @@ class FeederRunEventTableViewController: UITableViewController {
     }
     
     private func loadFeederRunEvents() -> [FeederRunEvent]? {
-        return NSKeyedUnarchiver.unarchiveObject(withFile: FeederRunEvent.ArchiveURL.path) as? [FeederRunEvent]
+        let archiveURL = FeederRunEvent.DocumentsDirectory.appendingPathComponent(feeder_uuid)
+        print(archiveURL)
+        
+        return NSKeyedUnarchiver.unarchiveObject(withFile: archiveURL.path) as? [FeederRunEvent]
     }
     
 

@@ -30,7 +30,7 @@
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
-                                    <segue destination="95Z-4z-gtk" kind="show" id="Zzd-7u-vAe"/>
+                                    <segue destination="95Z-4z-gtk" kind="show" identifier="editRunEvents" id="Zzd-7u-vAe"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7wR-2m-7qp">
@@ -356,7 +356,7 @@
                                 <connections>
                                     <outlet property="deviceNameLabel" destination="f8r-Qg-9XV" id="9IZ-xU-GdI"/>
                                     <outlet property="uuidLabel" destination="5va-Ml-7eM" id="fIp-Su-Kao"/>
-                                    <segue destination="BYZ-38-t0r" kind="show" id="8vf-Dl-mhc"/>
+                                    <segue destination="BYZ-38-t0r" kind="show" identifier="showFeederDetail" id="8vf-Dl-mhc"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -416,8 +416,9 @@
                                 <rect key="frame" x="34" y="239" width="306" height="349"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <mutableString key="text">The Smart Feeder is a prototype deer feeder developed in a joint effort between the School of Forestry and Wildlife Sciences and the Department of Computer Science and Software Engineering at Auburn University.
-The hardware system is an embedded system capable of communicating wirelessly over Bluetooth Low Energy (BLE), performing calculations to determine sunrise and sunset times, and circuitry to drive a DC motor.  The software system is an iOS application allowing users to configure schedules based on discrete times or sunrise/sunset events and send all needed information, including time and location data, over BLE to the hardware system. Together, these systems address the usability issues with the current products.</mutableString>
+                                <string key="text">The Smart Feeder is a prototype deer feeder developed in a joint effort between the School of Forestry and Wildlife Sciences and the Department of Computer Science and Software Engineering at Auburn University.
+
+The hardware system is an embedded system capable of communicating wirelessly over Bluetooth Low Energy (BLE), performing calculations to determine sunrise and sunset times, and circuitry to drive a DC motor.  The software system is an iOS application allowing users to configure schedules based on discrete times or sunrise/sunset events and send all needed information, including time and location data, over BLE to the hardware system. Together, these systems address the usability issues with the current products.</string>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
@@ -487,7 +488,7 @@
         <image name="info" width="36" height="36"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="0iJ-U8-lxB"/>
-        <segue reference="i3x-MV-qih"/>
+        <segue reference="eyp-TO-rdf"/>
+        <segue reference="4ri-wz-aTU"/>
     </inferredMetricsTieBreakers>
 </document>

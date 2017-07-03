@@ -28,7 +28,10 @@ class FeederDetailViewController: UIViewController, CBCentralManagerDelegate, CB
     let BLEUartTxCharacteristic = "6E400002-B5A3-F393-E0A9-E50E24DCCA9E"
     let BLEUartRxCharacteristic = "6E400003-B5A3-F393-E0A9-E50E24DCCA9E"
     
-    let BLESpecificPeripheralUUID = "BC20DB14-B33B-4A99-A202-55F3F5BAC384"
+    var BLESpecificPeripheralUUID = ""
+    
+    // Used to hard code device.  Keeping as notes for now.
+    // let BLESpecificPeripheralUUID = "BC20DB14-B33B-4A99-A202-55F3F5BAC384"
     
     // Useful for some sleep calculations
     let ms = 1000
@@ -107,16 +110,16 @@ class FeederDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             
             if let savedFeederRunEvents = self.loadFeederRunEvents() {
+                self.sendToDevice(command: "cl" + String(savedFeederRunEvents.count), buffer: "")
                 if savedFeederRunEvents.count > 0 {
-                    self.sendToDevice(command: "cl" + String(savedFeederRunEvents.count), buffer: "")
                     for i in 0...savedFeederRunEvents.count-1 {
                         self.sendToDevice(command: "ty" + String(i), buffer: savedFeederRunEvents[i].type)
                         self.sendToDevice(command: "rm" + String(i), buffer: String(savedFeederRunEvents[i].runMinutes))
                         self.sendToDevice(command: "of" + String(i), buffer: String(savedFeederRunEvents[i].offset))
                         self.sendToDevice(command: "da" + String(i), buffer: String(savedFeederRunEvents[i].date.timeIntervalSince1970))
                     }
-                    self.sendToDevice(command: "rc", buffer: "")
                 }
+                self.sendToDevice(command: "rc", buffer: "")
             }
 
             self.activityIndicator.stopAnimating()
@@ -297,8 +300,6 @@ class FeederDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                         self.setTimeOnDevice()
                     }
-                    usleep(useconds_t(10 * ms))
-//                    getAndSetTimeAndVoltage()
                 } else if (characteristic.uuid.uuidString == BLEUartRxCharacteristic) {
                     os_log("Found RX characteristic", log: OSLog.default, type: .debug)
                     peripheral.setNotifyValue(true, for: characteristic)
@@ -346,13 +347,20 @@ class FeederDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                 }
             } else if stringValueWithDesc.hasPrefix("r") {
                 stringValueWithDesc.remove(at: stringValueWithDesc.startIndex)
+                if stringValueWithDesc != "" && stringValueWithDesc.characters.count == 4 && stringValueWithDesc == "None" {
+                    nextRunLabel.text = "None"
+                }
                 if stringValueWithDesc != "" && stringValueWithDesc.characters.count >= 7 {
                     nextRunLabel.text = stringValueWithDesc
                 }
             } else if stringValueWithDesc.hasPrefix("d") {
                 stringValueWithDesc.remove(at: stringValueWithDesc.startIndex)
                 if stringValueWithDesc != "" && stringValueWithDesc.characters.count >= 1 {
-                    durationLabel.text = stringValueWithDesc + " Seconds"
+                    if stringValueWithDesc == "None" {
+                        durationLabel.text = "None"
+                    } else {
+                        durationLabel.text = stringValueWithDesc + " Seconds"
+                    }
                 }
             }
             
@@ -368,7 +376,9 @@ class FeederDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         
         if self.isMovingFromParentViewController {
             os_log("Moving to parent.  Disconnecting Device", log: OSLog.default, type: .debug)
-            centralManager.cancelPeripheralConnection(feeder!)
+            if feeder != nil {
+               centralManager.cancelPeripheralConnection(feeder!)
+            }
             feederConnected = false
             haveSetDeviceLocation = false
             forceDisconnect = true
@@ -378,6 +388,24 @@ class FeederDetailViewController: UIViewController, CBCentralManagerDelegate, CB
             durationLabel.text = "Unknown"
         }
     }
+    
+    // In a storyboard-based application, you will often want to do a little preparation before navigation
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        super.prepare(for: segue, sender: sender)
+        
+        switch(segue.identifier ?? "") {
+            
+        case "editRunEvents":
+            os_log("Editing run events.", log: OSLog.default, type: .debug)
+            let feederRunEventTableViewController = segue.destination as? FeederRunEventTableViewController
+            feederRunEventTableViewController?.feeder_uuid = BLESpecificPeripheralUUID
+            
+        default:
+            os_log("Should be heded to our info screen", log: OSLog.default, type: .debug)
+        }
+        
+    }
+    
     
     
     // MARK: - Private Methods
@@ -409,9 +437,6 @@ class FeederDetailViewController: UIViewController, CBCentralManagerDelegate, CB
             self.activityIndicator.stopAnimating()
             self.enableAllButtons()
         }
-        
-        
-
     }
     
     // Sends lat and long from phone to Smart Feeder Hardware
@@ -452,7 +477,9 @@ class FeederDetailViewController: UIViewController, CBCentralManagerDelegate, CB
     
     // Loads run events from stored data
     private func loadFeederRunEvents() -> [FeederRunEvent]? {
-        return NSKeyedUnarchiver.unarchiveObject(withFile: FeederRunEvent.ArchiveURL.path) as? [FeederRunEvent]
+        let archiveURL = FeederRunEvent.DocumentsDirectory.appendingPathComponent(BLESpecificPeripheralUUID)
+        
+        return NSKeyedUnarchiver.unarchiveObject(withFile: archiveURL.path) as? [FeederRunEvent]
     }
     
     private func disableAllButtons() {
