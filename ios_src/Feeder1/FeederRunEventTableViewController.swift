@@ -153,8 +153,6 @@ class FeederRunEventTableViewController: UITableViewController {
     private func saveFeederRunEvents() {
         
         let archiveURL = FeederRunEvent.DocumentsDirectory.appendingPathComponent(feeder_uuid)
-        print(archiveURL)
-        
         let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(feederRunEvents, toFile: archiveURL.path)
         if isSuccessfulSave {
             os_log("List of run events save success", log: OSLog.default, type: .debug)
@@ -165,8 +163,6 @@ class FeederRunEventTableViewController: UITableViewController {
     
     private func loadFeederRunEvents() -> [FeederRunEvent]? {
         let archiveURL = FeederRunEvent.DocumentsDirectory.appendingPathComponent(feeder_uuid)
-        print(archiveURL)
-        
         return NSKeyedUnarchiver.unarchiveObject(withFile: archiveURL.path) as? [FeederRunEvent]
     }
     

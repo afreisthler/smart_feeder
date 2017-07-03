@@ -20,9 +20,6 @@ class FeederDeviceTableViewController: UITableViewController, CBCentralManagerDe
     var timer: Timer?
     var foundDevices = [String]()
     
-    // MARK: - Actions
-    
-    
     // MARK: - Public Methods
     
     override func viewDidLoad() {
